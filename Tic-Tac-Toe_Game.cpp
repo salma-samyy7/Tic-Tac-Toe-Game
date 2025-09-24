@@ -44,7 +44,7 @@ public:
        for (int i = 0; i < size; i++) {
         bool rowWin = true;
         for (int j = 0; j < size; j++) {
-            if (board[i][j] != symbol) {
+            if (grid[i][j] != symbol) {
                 rowWin = false;
                 break;
             }
@@ -55,7 +55,7 @@ public:
     for (int j = 0; j < size; j++) {
         bool colWin = true;
         for (int i = 0; i < size; i++) {
-            if (board[i][j] != symbol) {
+            if (grid[i][j] != symbol) {
                 colWin = false;
                 break;
             }
@@ -65,7 +65,7 @@ public:
 
     bool diag1Win = true;
     for (int i = 0; i < size; i++) {
-        if (board[i][i] != symbol) {
+        if (grid[i][i] != symbol) {
             diag1Win = false;
             break;
         }
@@ -74,7 +74,7 @@ public:
 
     bool diag2Win = true;
     for (int i = 0; i < size; i++) {
-        if (board[i][size - 1 - i] != symbol) {
+        if (grid[i][size - 1 - i] != symbol) {
             diag2Win = false;
             break;
         }
@@ -88,7 +88,7 @@ public:
     {
       for (int i = 0; i < size; i++) {
         for (int j = 0; j < size; j++) {
-            if (board[i][j] == ' ') return false; 
+            if (grid[i][j] == ' ') return false; 
         }
     }
     return true;
@@ -96,14 +96,14 @@ public:
 
     char getCell(int row, int col) const //--Abdelmasih--
     {
-       return board[row][col];
+       return grid[row][col];
     }
 
     void reset() //--Abdelmasih--
     {
         for (int i = 0; i < size; i++) {
           for (int j = 0; j < size; j++) {
-            board[i][j] = ' ';
+            grid[i][j] = ' ';
            }
         }
        
@@ -305,9 +305,9 @@ public:
     bool checkGameEnd()    //--Abdelmasih--
     {
         // checks if the game has ended (win or draw)
-      if (board.checkWin(currentPlayer->getSymbol()))
+      if (board.checkWin(HumanPlayer->getSymbol()))
      {
-        cout << currentPlayer->getName() << " wins!\n";
+        cout << humanPlayer->getName() << " wins!\n";
         return true;
      }
       if (board.isFull())
