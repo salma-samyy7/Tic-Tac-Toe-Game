@@ -41,26 +41,72 @@ public:
 
     bool checkWin(char symbol) const //--Abdelmasih--
     {
-        // checks if the given symbol has won
-        // TODO: check rows, columns, diagonals for win
+       for (int i = 0; i < size; i++) {
+        bool rowWin = true;
+        for (int j = 0; j < size; j++) {
+            if (board[i][j] != symbol) {
+                rowWin = false;
+                break;
+            }
+        }
+        if (rowWin) return true;
+    }
+
+    for (int j = 0; j < size; j++) {
+        bool colWin = true;
+        for (int i = 0; i < size; i++) {
+            if (board[i][j] != symbol) {
+                colWin = false;
+                break;
+            }
+        }
+        if (colWin) return true;
+    }
+
+    bool diag1Win = true;
+    for (int i = 0; i < size; i++) {
+        if (board[i][i] != symbol) {
+            diag1Win = false;
+            break;
+        }
+    }
+    if (diag1Win) return true;
+
+    bool diag2Win = true;
+    for (int i = 0; i < size; i++) {
+        if (board[i][size - 1 - i] != symbol) {
+            diag2Win = false;
+            break;
+        }
+    }
+    if (diag2Win) return true;
+
+    return false;
     }
 
     bool isFull() const //--Abdelmasih--
     {
-        // checks if no moves are left
-        // TODO: return true if board has no empty cells
+      for (int i = 0; i < size; i++) {
+        for (int j = 0; j < size; j++) {
+            if (board[i][j] == ' ') return false; 
+        }
+    }
+    return true;
     }
 
     char getCell(int row, int col) const //--Abdelmasih--
     {
-        // returns the symbol at given cell
-        // TODO: return the symbol at row, col
+       return board[row][col];
     }
 
     void reset() //--Abdelmasih--
     {
-        // clears the board back to empty state
-        // TODO: clear all cells to empty state
+        for (int i = 0; i < size; i++) {
+          for (int j = 0; j < size; j++) {
+            board[i][j] = ' ';
+           }
+        }
+       
     }
 
     int getSize() const    //--Farah--
@@ -91,7 +137,8 @@ public:
     Player(const string &n, char sym) //--Abdelmasih--
     {
         // constructor: sets name and symbol
-        // TODO: assign name and symbol
+        name = n;
+        symbol = sym ;
     }
 
     virtual void getMove(const Board &board, int &row, int &col) = 0; // asks player for next move
@@ -196,7 +243,35 @@ public:
     void showMenu()     //--Abdelmasih--
     { 
         // displays menu options (PvP, PvC, Quit)
-        // TODO: print menu and take user input
+      int choice;
+       cout << "==== Tic-Tac-Toe ====\n";
+       cout << "1. Player vs Player (PvP)\n";
+       cout << "2. Player vs Computer (PvC)\n";
+       cout << "3. Quit\n";
+       cout << "Choose option: ";
+       cin >> choice;
+
+       switch (choice)
+      {
+       case 1:
+            setupPvP();
+         break;
+       case 2:
+     {
+        int diffChoice;
+        cout << "Select difficulty: 1. Easy 2. Hard: ";
+        cin >> diffChoice;
+        Difficulty diff = (diffChoice == 1) ? Difficulty::Easy : Difficulty::Hard;
+        setupPvC(diff);
+        break;
+     }
+       case 3:
+        cout << "Exiting game...\n";
+        exit(0);
+       default:
+        cout << "Invalid choice\n";
+        showMenu();
+     }  
     }
 
     void setupPvP()     //--Salma--
@@ -230,7 +305,17 @@ public:
     bool checkGameEnd()    //--Abdelmasih--
     {
         // checks if the game has ended (win or draw)
-        // TODO: return true if someone wins or if the board is full
+      if (board.checkWin(currentPlayer->getSymbol()))
+     {
+        cout << currentPlayer->getName() << " wins!\n";
+        return true;
+     }
+      if (board.isFull())
+     {
+        cout << "It's a draw!\n";
+        return true;
+     }
+     return false;   
     }
 
     void displayResult() const     //--Mazen--
