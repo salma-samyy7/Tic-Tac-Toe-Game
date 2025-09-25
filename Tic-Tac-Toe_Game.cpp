@@ -381,12 +381,12 @@ public:
     bool checkGameEnd()    //--Abdelmasih--
     {
         // checks if the game has ended (win or draw)
-      if (board.checkWin(HumanPlayer->getSymbol()))
+      if (board_.checkWin(player1_->getSymbol()))
      {
-        cout << humanPlayer->getName() << " wins!\n";
+        cout << player1_->getName() << " wins!\n";
         return true;
      }
-      if (board.isFull())
+      if (board_.isFull())
      {
         cout << "It's a draw!\n";
         return true;
