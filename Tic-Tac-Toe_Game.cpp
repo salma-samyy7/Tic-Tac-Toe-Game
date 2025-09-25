@@ -88,7 +88,7 @@ public:
     {
       for (int i = 0; i < size; i++) {
         for (int j = 0; j < size; j++) {
-            if (grid[i][j] == ' ') return false; 
+            if (grid[i][j] == ' ') return false;
         }
     }
     return true;
@@ -106,7 +106,7 @@ public:
             grid[i][j] = ' ';
            }
         }
-       
+
     }
 
     int getSize() const    //--Farah--
@@ -156,10 +156,10 @@ public:
         // TODO: return symbol_
     }
 
-    void setName(const string &name)     //--Mina--
+    void setName(const string &n)     //--Mina--
     {
         // updates player's name
-        // TODO: update name
+        name = n;
     }
 };
 
@@ -184,22 +184,26 @@ class AIPlayer : public Player
 private:
     Difficulty difficulty; // AI difficulty level
 public:
-    AIPlayer(const string &name, char symbol, Difficulty diff)     //--Mina--
-    {
-        // constructor for AI
-        // TODO: initialize AI with difficulty
-    }
+    AIPlayer(const string &name, char symbol, Difficulty diff) : Player(name, symbol), difficulty(diff) {}     //--Mina--
 
-    void getMove(const Board &board, int &row, int &col) override 
+    void getMove(const Board &board, int &row, int &col) override
     {     //--Mina--
         // gets move based on difficulty
-        // TODO: choose random move (easy) or best move (hard)
+        cout << name << "'s turn (" << symbol << ")...\n";
+
+        if (difficulty == EASY) {
+            getRandomMove(board, row, col);
+        } else {
+            getBestMove(board, row, col);
+        }
+
+        cout << name << " chooses position (" << row << ", " << col << ")\n";
     }
 
     void setDifficulty(Difficulty d)     //--Mina--
     {
         // updates AI difficulty
-        // TODO: update difficulty
+        difficulty = d;
     }
 
     void getRandomMove(const Board &board, int &row, int &col) const     //--Mazen--
@@ -207,10 +211,65 @@ public:
         // selects random empty spot
         // TODO: pick a random available move
     }
-    void getBestMove(const Board &board, int &row, int &col) const      //--Mina--
-    {
-        // uses minimax to find best move
-        // TODO: implement minimax search
+    void getBestMove(const Board &board, int &row, int &col) const     //--Mina--
+   {
+        int bestScore = -1000;
+        vector<pair<int, int>> bestMoves;
+
+        vector<pair<int, int>> moves = board.availableMoves();
+
+        for (const auto &move : moves) {
+            Board tempBoard = board;
+            tempBoard.makeMove(move.first, move.second, symbol);
+
+            int score = minimax(tempBoard, 0, false);
+
+            if (score > bestScore) {
+                bestScore = score;
+                bestMoves.clear();
+                bestMoves.push_back(move);
+            } else if (score == bestScore) {
+                bestMoves.push_back(move);
+            }
+        }
+
+        if (!bestMoves.empty()) {
+            int randomIndex = rand() % bestMoves.size();
+            row = bestMoves[randomIndex].first;
+            col = bestMoves[randomIndex].second;
+        }
+   }
+private:
+    int minimax(Board board, int depth, bool isMaximizing) const {
+        char opponent = (symbol == 'X') ? 'O' : 'X';
+
+        if (board.checkWin(symbol)) return 10 - depth;
+        if (board.checkWin(opponent)) return depth - 10;
+        if (board.isFull()) return 0;
+
+        if (isMaximizing) {
+            int bestScore = -1000;
+            vector<pair<int, int>> moves = board.availableMoves();
+
+            for (const auto &move : moves) {
+                Board tempBoard = board;
+                tempBoard.makeMove(move.first, move.second, symbol);
+                int score = minimax(tempBoard, depth + 1, false);
+                bestScore = max(score, bestScore);
+            }
+            return bestScore;
+        } else {
+            int bestScore = 1000;
+            vector<pair<int, int>> moves = board.availableMoves();
+
+            for (const auto &move : moves) {
+                Board tempBoard = board;
+                tempBoard.makeMove(move.first, move.second, opponent);
+                int score = minimax(tempBoard, depth + 1, true);
+                bestScore = min(score, bestScore);
+            }
+            return bestScore;
+        }
     }
 
     int evaluateBoard(const Board &board) const     //--Salma--
@@ -241,7 +300,7 @@ public:
     }
 
     void showMenu()     //--Abdelmasih--
-    { 
+    {
         // displays menu options (PvP, PvC, Quit)
       int choice;
        cout << "==== Tic-Tac-Toe ====\n";
@@ -261,8 +320,8 @@ public:
         int diffChoice;
         cout << "Select difficulty: 1. Easy 2. Hard: ";
         cin >> diffChoice;
-        Difficulty diff = (diffChoice == 1) ? Difficulty::Easy : Difficulty::Hard;
-        setupPvC(diff);
+        Difficulty diff = (diffChoice == 1) ? Difficulty::EASY : Difficulty::HARD;
+        setupPVC(diff);
         break;
      }
        case 3:
@@ -271,7 +330,7 @@ public:
        default:
         cout << "Invalid choice\n";
         showMenu();
-     }  
+     }
     }
 
     void setupPvP()     //--Salma--
@@ -289,16 +348,33 @@ public:
     void switchPlayer()     //--Mina--
     {
         // switch turns between players
-        // TODO: change current_ to the other player
+        current_ = (current_ == player1_) ? player2_ : player1_;
     }
 
-    void handleHumanMove(Player player)     //--Mazen--
+    void playRound() {
+        board_.display();
+
+        while (true) {
+            int row, col;
+            current_->getMove(board_, row, col);
+            board_.makeMove(row, col, current_->getSymbol());
+            board_.display();
+
+            if (checkGameEnd()) {
+                break;
+            }
+
+            switchPlayer();
+        }
+    }
+
+    void handleHumanMove(Player* player)     //--Mazen-- //Mina:updated as a pointer
     {
         // TODO: Get move from human and apply to board
     }
 
-    void handleAIMove(AIPlayer aiplayer)    //--Farah--
-    {  
+    void handleAIMove(AIPlayer* aiplayer)    //--Farah-- //Mina:updated as a pointer
+    {
         // TODO: Get move from AI and apply to board
     }
 
@@ -315,7 +391,7 @@ public:
         cout << "It's a draw!\n";
         return true;
      }
-     return false;   
+     return false;
     }
 
     void displayResult() const     //--Mazen--
