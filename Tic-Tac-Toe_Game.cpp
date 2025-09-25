@@ -109,7 +109,7 @@ public:
 
     }
 
-    int getSize() const    //--Farah--
+    int getSize() const //--Farah--
     {
         // returns the board size
         // TODO: return size
@@ -144,19 +144,22 @@ public:
     virtual void getMove(const Board &board, int &row, int &col) = 0; // asks player for next move
     // TODO: HumanPlayer will ask user input, AIPlayer will calculate move
 
-    string getName() const     //--Mazen--
+    string getName() const //--Mazen--
     {
         // returns player's name
         // TODO: return name
     }
 
-    char getSymbol() const     //--Salma--
+    char getSymbol() const //--Salma--
     {
         // returns player's symbol
         // TODO: return symbol_
+        return symbol;
     }
 
+
     void setName(const string &n)     //--Mina--
+
     {
         // updates player's name
         name = n;
@@ -166,13 +169,13 @@ public:
 class HumanPlayer : public Player //  extra class for clean oop
 {
 public:
-    HumanPlayer(const string &name, char symbol)     //--Mazen--
+    HumanPlayer(const string &name, char symbol) //--Mazen--
     {
         // constructor for human player
         // TODO: call base class constructor
     }
 
-    void getMove(const Board &board, int &row, int &col) override     //--Mazen--
+    void getMove(const Board &board, int &row, int &col) override //--Mazen--
     {
         // gets move from user
         // TODO: ask user for row, col input and validate
@@ -184,6 +187,7 @@ class AIPlayer : public Player
 private:
     Difficulty difficulty; // AI difficulty level
 public:
+
     AIPlayer(const string &name, char symbol, Difficulty diff) : Player(name, symbol), difficulty(diff) {}     //--Mina--
 
     void getMove(const Board &board, int &row, int &col) override
@@ -198,19 +202,21 @@ public:
         }
 
         cout << name << " chooses position (" << row << ", " << col << ")\n";
+
     }
 
-    void setDifficulty(Difficulty d)     //--Mina--
+    void setDifficulty(Difficulty d) //--Mina--
     {
         // updates AI difficulty
         difficulty = d;
     }
 
-    void getRandomMove(const Board &board, int &row, int &col) const     //--Mazen--
+    void getRandomMove(const Board &board, int &row, int &col) const //--Mazen--
     {
         // selects random empty spot
         // TODO: pick a random available move
     }
+
     void getBestMove(const Board &board, int &row, int &col) const     //--Mina--
    {
         int bestScore = -1000;
@@ -270,9 +276,10 @@ private:
             }
             return bestScore;
         }
+
     }
 
-    int evaluateBoard(const Board &board) const     //--Salma--
+    int evaluateBoard(const Board &board) const //--Salma--
     {
         // evaluates current board state
         // TODO: +10 if AI wins, -10 if opponent wins, 0 if draw
@@ -287,19 +294,28 @@ private:
     Player *player2_; // second player
     Player *current_; // currently active player
 public:
-    Game()     //--Salma--
+    Game() : board_(3) //--Salma--
     {
         // constructor: initializes board
         // TODO: create board and set players to nullptr
+
+        player1_ = nullptr;
+        player2_ = nullptr;
+        current_ = nullptr;
     }
 
-    void start()     //--Salma--
+    void start() //--Salma--
     {
         // starts the whole game loop
         // TODO: run menu, setup game, play rounds until quit
+        showMenu();
+        int mode;
+        cout << "Select Game Mode: ";
+        cin >> mode;
     }
 
     void showMenu()     //--Abdelmasih--
+
     {
         // displays menu options (PvP, PvC, Quit)
       int choice;
@@ -333,23 +349,41 @@ public:
      }
     }
 
-    void setupPvP()     //--Salma--
+    void setupPvP() //--Salma--
     {
         // setup player vs player game
         // TODO: create two HumanPlayer objects
+        string name_p1, name_p2;
+        cout << "Enter First player's name (player symbol X): ";
+        cin >> name_p1;
+
+        cout << "Enter Second player's name (player symbol O): ";
+        cin >> name_p2;
+
+        player1_ = new HumanPlayer(name_p1, 'X');
+        player2_ = new HumanPlayer(name_p2, 'O');
+        current_ = player1_;
     }
 
-    void setupPVC(Difficulty diff)     //--Salma--
+    void setupPVC(Difficulty diff) //--Salma--
     {
         // setup player vs AI game
         // TODO: create HumanPlayer and AIPlayer
+        string name;
+        cout << "Enter player's name (player symbol X): ";
+        cin >> name;
+
+        player1_ = new HumanPlayer(name, 'X');
+        player2_ = new AIPlayer("Computer", 'O', diff);
+        current_ = player1_;
     }
 
-    void switchPlayer()     //--Mina--
+    void switchPlayer() //--Mina--
     {
         // switch turns between players
         current_ = (current_ == player1_) ? player2_ : player1_;
     }
+
 
     void playRound() {
         board_.display();
@@ -373,12 +407,13 @@ public:
         // TODO: Get move from human and apply to board
     }
 
+
     void handleAIMove(AIPlayer* aiplayer)    //--Farah-- //Mina:updated as a pointer
     {
         // TODO: Get move from AI and apply to board
     }
 
-    bool checkGameEnd()    //--Abdelmasih--
+    bool checkGameEnd() //--Abdelmasih--
     {
         // checks if the game has ended (win or draw)
       if (board_.checkWin(player1_->getSymbol()))
@@ -394,14 +429,27 @@ public:
      return false;
     }
 
-    void displayResult() const     //--Mazen--
+    void displayResult() const //--Mazen--
     {
         // show game result
         // TODO: announce winner or draw
     }
-    void rest()     //--Salma--
+    void reset() //--Salma--
     {
         // TODO: rest game;
+        if (player1_)
+        {
+            delete player1_;
+            player1_ = nullptr;
+        }
+        if (player2_)
+        {
+            delete player2_;
+            player2_ = nullptr;
+        }
+
+        current_ = nullptr;
+        board_.reset();
     }
 };
 
