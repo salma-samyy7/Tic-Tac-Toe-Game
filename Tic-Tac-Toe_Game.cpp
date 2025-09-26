@@ -19,54 +19,52 @@ public:
     Board(int s = 3) : size(s) //--Farah--
     {                          // constructor: creates board of given size
                                // TODO: initialize board with empty spaces given size
-        grid =vector<vector<char>>(size, vector<char>(size, ' '));
-                         
+        grid = vector<vector<char>>(size, vector<char>(size, ' '));
     }
 
     void display() const //--Farah--
     {
         // prints the current board to console
         // TODO: print board with row/col formatting
-        for(int i=0; i< size;i++)
-    {
-        for(int j=0; j <size;j++)
+        for (int i = 0; i < size; i++)
         {
-            cout<< grid[i][j];
-            if(j< size - 1) cout << "|";
-        }
-        cout<< "\n";
-        if(i < size - 1)
-        {
-            for(int j = 0; j<size;j++)
+            for (int j = 0; j < size; j++)
             {
-                cout << "-";
-                if (j< size - 1) cout << "+";
+                cout << grid[i][j];
+                if (j < size - 1)
+                    cout << "|";
             }
             cout << "\n";
+            if (i < size - 1)
+            {
+                for (int j = 0; j < size; j++)
+                {
+                    cout << "-";
+                    if (j < size - 1)
+                        cout << "+";
+                }
+                cout << "\n";
+            }
         }
-    }
-
     }
 
     bool makeMove(int row, int col, char symbol) //--Farah--
     {
         // attempts to place symbol on board
         // TODO: if valid, place symbol and return true, else return false
-         if(isValidMove(row, col))
-    {
-        grid[row][col] = symbol;
-        return true;
-    }
-    return false;
-
+        if (isValidMove(row, col))
+        {
+            grid[row][col] = symbol;
+            return true;
+        }
+        return false;
     }
 
     bool isValidMove(int row, int col) const //--Farah--
     {
         // checks if a move can be made at given coordinates
         // TODO: check if row and col are within bounds and cell is empty
-        return (row >= 0 && row < size && col >= 0 && col < size &&grid[row][col] == ' ');
-
+        return (row >= 0 && row < size && col >= 0 && col < size && grid[row][col] == ' ');
     }
 
     bool checkWin(char symbol) const //--Abdelmasih--
@@ -160,23 +158,23 @@ public:
     int getSize() const //--Farah--
     {
         // returns the board size
-       return size; // TODO: return size
+        return size; // TODO: return size
     }
 
     vector<pair<int, int>> availableMoves() const // helper function    //--Farah--
     {
         // lists all empty cells
-      vector<pair<int, int>> moves;
-    for(int i =0; i < size;i++)
-    {
-        for(int j =0; j < size;j++)
+        vector<pair<int, int>> moves;
+        for (int i = 0; i < size; i++)
         {
-            if(grid[i][j]==' ')
-                moves.push_back({i, j});
+            for (int j = 0; j < size; j++)
+            {
+                if (grid[i][j] == ' ')
+                    moves.push_back({i, j});
+            }
         }
-    }
-    return moves;
-  // TODO: return vector of free cell positions
+        return moves;
+        // TODO: return vector of free cell positions
     }
 };
 
@@ -206,12 +204,14 @@ public:
     {
         // returns player's name
         // TODO: return name
+        return name;
     }
 
     char getSymbol() const //--Salma--
     {
         // returns player's symbol
         // TODO: return symbol_
+
         return symbol;
     }
 
@@ -219,6 +219,7 @@ public:
 
     {
         // updates player's name
+
         name = n;
     }
 };
@@ -228,14 +229,17 @@ class HumanPlayer : public Player //  extra class for clean oop
 public:
     HumanPlayer(const string &name, char symbol) //--Mazen--
     {
-        // constructor for human player
-        // TODO: call base class constructor
+        this->name = name;
+        this->symbol = symbol;
     }
 
     void getMove(const Board &board, int &row, int &col) override //--Mazen--
     {
         // gets move from user
-        // TODO: ask user for row, col input and validate
+        cout << name << "'s turn (" << symbol << "). Enter your move (row col): ";
+        cin >> row >> col;
+        row--;
+        col--;
     }
 };
 
@@ -273,6 +277,15 @@ public:
     {
         // selects random empty spot
         // TODO: pick a random available move
+
+        vector<pair<int, int>> moves = board.availableMoves();
+        if (!moves.empty())
+        {
+            int randomindex = rand() % moves.size();
+            row = moves[randomindex].first;
+            col = moves[randomindex].second;
+            /* code */
+        }
     }
 
     void getBestMove(const Board &board, int &row, int &col) const //--Mina--
@@ -464,14 +477,18 @@ public:
 
     void handleHumanMove(Player *player) //--Mazen-- //Mina:updated as a pointer
     {
+        int row, col;
+        player->getMove(board_, row, col);
+        board_.makeMove(row, col, player->getSymbol());
+
         // TODO: Get move from human and apply to board
     }
 
     void handleAIMove(AIPlayer *aiplayer) //--Farah-- //Mina:updated as a pointer
     {
-       int row, col;
-       aiplayer->getMove(board_, row, col);
-       board_.makeMove(row, col, aiplayer->getSymbol());  // TODO: Get move from AI and apply to board
+        int row, col;
+        aiplayer->getMove(board_, row, col);
+        board_.makeMove(row, col, aiplayer->getSymbol()); // TODO: Get move from AI and apply to board
     }
 
     bool checkGameEnd() //--Abdelmasih--
@@ -494,6 +511,18 @@ public:
     {
         // show game result
         // TODO: announce winner or draw
+        if (board_.checkWin(player1_->getSymbol()))
+        {
+            cout << player1_->getName() << " wins!\n";
+        }
+        else if (board_.checkWin(player2_->getSymbol()))
+        {
+            cout << player2_->getName() << " wins!\n";
+        }
+        else if (board_.isFull())
+        {
+            cout << "It's a draw!\n";
+        }
     }
     void reset() //--Salma--
     {
