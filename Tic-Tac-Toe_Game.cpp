@@ -19,24 +19,54 @@ public:
     Board(int s = 3) : size(s) //--Farah--
     {                          // constructor: creates board of given size
                                // TODO: initialize board with empty spaces given size
+        grid =vector<vector<char>>(size, vector<char>(size, ' '));
+                         
     }
 
     void display() const //--Farah--
     {
         // prints the current board to console
         // TODO: print board with row/col formatting
+        for(int i=0; i< size;i++)
+    {
+        for(int j=0; j <size;j++)
+        {
+            cout<< grid[i][j];
+            if(j< size - 1) cout << "|";
+        }
+        cout<< "\n";
+        if(i < size - 1)
+        {
+            for(int j = 0; j<size;j++)
+            {
+                cout << "-";
+                if (j< size - 1) cout << "+";
+            }
+            cout << "\n";
+        }
+    }
+
     }
 
     bool makeMove(int row, int col, char symbol) //--Farah--
     {
         // attempts to place symbol on board
         // TODO: if valid, place symbol and return true, else return false
+         if(isValidMove(row, col))
+    {
+        grid[row][col] = symbol;
+        return true;
+    }
+    return false;
+
     }
 
     bool isValidMove(int row, int col) const //--Farah--
     {
         // checks if a move can be made at given coordinates
         // TODO: check if row and col are within bounds and cell is empty
+        return (row >= 0 && row < size && col >= 0 && col < size &&grid[row][col] == ' ');
+
     }
 
     bool checkWin(char symbol) const //--Abdelmasih--
@@ -112,13 +142,23 @@ public:
     int getSize() const //--Farah--
     {
         // returns the board size
-        // TODO: return size
+       return size; // TODO: return size
     }
 
     vector<pair<int, int>> availableMoves() const // helper function    //--Farah--
     {
         // lists all empty cells
-        // TODO: return vector of free cell positions
+      vector<pair<int, int>> moves;
+    for(int i =0; i < size;i++)
+    {
+        for(int j =0; j < size;j++)
+        {
+            if(grid[i][j]==' ')
+                moves.push_back({i, j});
+        }
+    }
+    return moves;
+  // TODO: return vector of free cell positions
     }
 };
 
@@ -410,7 +450,9 @@ public:
 
     void handleAIMove(AIPlayer* aiplayer)    //--Farah-- //Mina:updated as a pointer
     {
-        // TODO: Get move from AI and apply to board
+       int row, col;
+       aiplayer->getMove(board_, row, col);
+       board_.makeMove(row, col, aiplayer->getSymbol());  // TODO: Get move from AI and apply to board
     }
 
     bool checkGameEnd() //--Abdelmasih--
