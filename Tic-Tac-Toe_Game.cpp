@@ -41,72 +41,90 @@ public:
 
     bool checkWin(char symbol) const //--Abdelmasih--
     {
-       for (int i = 0; i < size; i++) {
-        bool rowWin = true;
-        for (int j = 0; j < size; j++) {
-            if (grid[i][j] != symbol) {
-                rowWin = false;
+        for (int i = 0; i < size; i++)
+        {
+            bool rowWin = true;
+            for (int j = 0; j < size; j++)
+            {
+                if (grid[i][j] != symbol)
+                {
+                    rowWin = false;
+                    break;
+                }
+            }
+            if (rowWin)
+                return true;
+        }
+
+        for (int j = 0; j < size; j++)
+        {
+            bool colWin = true;
+            for (int i = 0; i < size; i++)
+            {
+                if (grid[i][j] != symbol)
+                {
+                    colWin = false;
+                    break;
+                }
+            }
+            if (colWin)
+                return true;
+        }
+
+        bool diag1Win = true;
+        for (int i = 0; i < size; i++)
+        {
+            if (grid[i][i] != symbol)
+            {
+                diag1Win = false;
                 break;
             }
         }
-        if (rowWin) return true;
-    }
+        if (diag1Win)
+            return true;
 
-    for (int j = 0; j < size; j++) {
-        bool colWin = true;
-        for (int i = 0; i < size; i++) {
-            if (grid[i][j] != symbol) {
-                colWin = false;
+        bool diag2Win = true;
+        for (int i = 0; i < size; i++)
+        {
+            if (grid[i][size - 1 - i] != symbol)
+            {
+                diag2Win = false;
                 break;
             }
         }
-        if (colWin) return true;
-    }
+        if (diag2Win)
+            return true;
 
-    bool diag1Win = true;
-    for (int i = 0; i < size; i++) {
-        if (grid[i][i] != symbol) {
-            diag1Win = false;
-            break;
-        }
-    }
-    if (diag1Win) return true;
-
-    bool diag2Win = true;
-    for (int i = 0; i < size; i++) {
-        if (grid[i][size - 1 - i] != symbol) {
-            diag2Win = false;
-            break;
-        }
-    }
-    if (diag2Win) return true;
-
-    return false;
+        return false;
     }
 
     bool isFull() const //--Abdelmasih--
     {
-      for (int i = 0; i < size; i++) {
-        for (int j = 0; j < size; j++) {
-            if (grid[i][j] == ' ') return false;
+        for (int i = 0; i < size; i++)
+        {
+            for (int j = 0; j < size; j++)
+            {
+                if (grid[i][j] == ' ')
+                    return false;
+            }
         }
-    }
-    return true;
+        return true;
     }
 
     char getCell(int row, int col) const //--Abdelmasih--
     {
-       return grid[row][col];
+        return grid[row][col];
     }
 
     void reset() //--Abdelmasih--
     {
-        for (int i = 0; i < size; i++) {
-          for (int j = 0; j < size; j++) {
-            grid[i][j] = ' ';
-           }
+        for (int i = 0; i < size; i++)
+        {
+            for (int j = 0; j < size; j++)
+            {
+                grid[i][j] = ' ';
+            }
         }
-
     }
 
     int getSize() const //--Farah--
@@ -138,7 +156,7 @@ public:
     {
         // constructor: sets name and symbol
         name = n;
-        symbol = sym ;
+        symbol = sym;
     }
 
     virtual void getMove(const Board &board, int &row, int &col) = 0; // asks player for next move
@@ -157,8 +175,7 @@ public:
         return symbol;
     }
 
-
-    void setName(const string &n)     //--Mina--
+    void setName(const string &n) //--Mina--
 
     {
         // updates player's name
@@ -187,22 +204,23 @@ class AIPlayer : public Player
 private:
     Difficulty difficulty; // AI difficulty level
 public:
-
-    AIPlayer(const string &name, char symbol, Difficulty diff) : Player(name, symbol), difficulty(diff) {}     //--Mina--
+    AIPlayer(const string &name, char symbol, Difficulty diff) : Player(name, symbol), difficulty(diff) {} //--Mina--
 
     void getMove(const Board &board, int &row, int &col) override
-    {     //--Mina--
+    { //--Mina--
         // gets move based on difficulty
         cout << name << "'s turn (" << symbol << ")...\n";
 
-        if (difficulty == EASY) {
+        if (difficulty == EASY)
+        {
             getRandomMove(board, row, col);
-        } else {
+        }
+        else
+        {
             getBestMove(board, row, col);
         }
 
         cout << name << " chooses position (" << row << ", " << col << ")\n";
-
     }
 
     void setDifficulty(Difficulty d) //--Mina--
@@ -217,58 +235,78 @@ public:
         // TODO: pick a random available move
     }
 
-    void getBestMove(const Board &board, int &row, int &col) const     //--Mina--
-   {
+    void getBestMove(const Board &board, int &row, int &col) const //--Mina--
+    {
         int bestScore = -1000;
         vector<pair<int, int>> bestMoves;
 
         vector<pair<int, int>> moves = board.availableMoves();
 
-        for (const auto &move : moves) {
+        for (const auto &move : moves)
+        {
             Board tempBoard = board;
             tempBoard.makeMove(move.first, move.second, symbol);
 
             int score = minimax(tempBoard, 0, false);
 
-            if (score > bestScore) {
+            if (score > bestScore)
+            {
                 bestScore = score;
                 bestMoves.clear();
                 bestMoves.push_back(move);
-            } else if (score == bestScore) {
+            }
+            else if (score == bestScore)
+            {
                 bestMoves.push_back(move);
             }
         }
 
-        if (!bestMoves.empty()) {
+        if (!bestMoves.empty())
+        {
             int randomIndex = rand() % bestMoves.size();
             row = bestMoves[randomIndex].first;
             col = bestMoves[randomIndex].second;
         }
-   }
+    }
+
 private:
-    int minimax(Board board, int depth, bool isMaximizing) const {
+    int minimax(Board board, int depth, bool isMaximizing) const
+    {
+        int score = evaluateBoard(board); // use function
+
+        if (score != 0)
+        {
+            return score - depth; // Terminal state: adjust score by depth so AI prefers quick wins and delays losses
+        }
+
+        if (board.isFull())
+        {
+            return 0;
+        }
+
         char opponent = (symbol == 'X') ? 'O' : 'X';
 
-        if (board.checkWin(symbol)) return 10 - depth;
-        if (board.checkWin(opponent)) return depth - 10;
-        if (board.isFull()) return 0;
-
-        if (isMaximizing) {
+        if (isMaximizing)
+        {
             int bestScore = -1000;
             vector<pair<int, int>> moves = board.availableMoves();
 
-            for (const auto &move : moves) {
+            for (const auto &move : moves)
+            {
                 Board tempBoard = board;
                 tempBoard.makeMove(move.first, move.second, symbol);
                 int score = minimax(tempBoard, depth + 1, false);
                 bestScore = max(score, bestScore);
             }
             return bestScore;
-        } else {
+        }
+        else
+        {
             int bestScore = 1000;
             vector<pair<int, int>> moves = board.availableMoves();
 
-            for (const auto &move : moves) {
+            for (const auto &move : moves)
+            {
                 Board tempBoard = board;
                 tempBoard.makeMove(move.first, move.second, opponent);
                 int score = minimax(tempBoard, depth + 1, true);
@@ -276,13 +314,19 @@ private:
             }
             return bestScore;
         }
-
     }
 
     int evaluateBoard(const Board &board) const //--Salma--
     {
         // evaluates current board state
         // TODO: +10 if AI wins, -10 if opponent wins, 0 if draw
+        char opponent = (symbol == 'X') ? 'O' : 'X';
+
+        if (board.checkWin(symbol))
+            return +10;
+        if (board.checkWin(opponent))
+            return -10;
+        return 0; // draw or not terminal
     }
 };
 
@@ -304,49 +348,17 @@ public:
         current_ = nullptr;
     }
 
-    void start() //--Salma--
-    {
-        // starts the whole game loop
-        // TODO: run menu, setup game, play rounds until quit
-        showMenu();
-        int mode;
-        cout << "Select Game Mode: ";
-        cin >> mode;
-    }
-
-    void showMenu()     //--Abdelmasih--
+    void showMenu() //--Abdelmasih--
 
     {
         // displays menu options (PvP, PvC, Quit)
-      int choice;
-       cout << "==== Tic-Tac-Toe ====\n";
-       cout << "1. Player vs Player (PvP)\n";
-       cout << "2. Player vs Computer (PvC)\n";
-       cout << "3. Quit\n";
-       cout << "Choose option: ";
-       cin >> choice;
 
-       switch (choice)
-      {
-       case 1:
-            setupPvP();
-         break;
-       case 2:
-     {
-        int diffChoice;
-        cout << "Select difficulty: 1. Easy 2. Hard: ";
-        cin >> diffChoice;
-        Difficulty diff = (diffChoice == 1) ? Difficulty::EASY : Difficulty::HARD;
-        setupPVC(diff);
-        break;
-     }
-       case 3:
-        cout << "Exiting game...\n";
-        exit(0);
-       default:
-        cout << "Invalid choice\n";
-        showMenu();
-     }
+        cout << "TIC-TAC-TOE GAME\n";
+        cout << "1. Player vs Player\n";
+        cout << "2. Player vs Computer (Easy)\n";
+        cout << "3. Player vs Computer (Hard)\n";
+        cout << "4. Exit\n";
+        cout << "Select game mode: ";
     }
 
     void setupPvP() //--Salma--
@@ -384,17 +396,25 @@ public:
         current_ = (current_ == player1_) ? player2_ : player1_;
     }
 
-
-    void playRound() {
+    void playRound()
+    {
         board_.display();
 
-        while (true) {
-            int row, col;
-            current_->getMove(board_, row, col);
-            board_.makeMove(row, col, current_->getSymbol());
+        while (true)
+        {
+            if (dynamic_cast<HumanPlayer *>(current_)) // check if current is Human
+            {
+                handleHumanMove(current_);
+            }
+            else if (dynamic_cast<AIPlayer *>(current_)) // check if current is AI
+            {
+                handleAIMove(static_cast<AIPlayer *>(current_));
+            }
+
             board_.display();
 
-            if (checkGameEnd()) {
+            if (checkGameEnd())
+            {
                 break;
             }
 
@@ -402,13 +422,12 @@ public:
         }
     }
 
-    void handleHumanMove(Player* player)     //--Mazen-- //Mina:updated as a pointer
+    void handleHumanMove(Player *player) //--Mazen-- //Mina:updated as a pointer
     {
         // TODO: Get move from human and apply to board
     }
 
-
-    void handleAIMove(AIPlayer* aiplayer)    //--Farah-- //Mina:updated as a pointer
+    void handleAIMove(AIPlayer *aiplayer) //--Farah-- //Mina:updated as a pointer
     {
         // TODO: Get move from AI and apply to board
     }
@@ -416,17 +435,17 @@ public:
     bool checkGameEnd() //--Abdelmasih--
     {
         // checks if the game has ended (win or draw)
-      if (board_.checkWin(player1_->getSymbol()))
-     {
-        cout << player1_->getName() << " wins!\n";
-        return true;
-     }
-      if (board_.isFull())
-     {
-        cout << "It's a draw!\n";
-        return true;
-     }
-     return false;
+        if (board_.checkWin(current_->getSymbol()))
+        {
+            cout << current_->getName() << " wins!\n";
+            return true;
+        }
+        if (board_.isFull())
+        {
+            cout << "It's a draw!\n";
+            return true;
+        }
+        return false;
     }
 
     void displayResult() const //--Mazen--
@@ -450,6 +469,50 @@ public:
 
         current_ = nullptr;
         board_.reset();
+    }
+
+    void start() //--Salma--
+    {
+        while (true)
+        {
+            showMenu(); // prints the menu only
+
+            int choice;
+            cin >> choice;
+
+            switch (choice)
+            {
+            case 1:
+                setupPvP();
+                break;
+            case 2:
+                setupPVC(Difficulty::EASY); // directly Easy
+                break;
+            case 3:
+                setupPVC(Difficulty::HARD); // directly Hard
+                break;
+            case 4:
+                cout << "Exiting game...\n";
+                return;
+            default:
+                cout << "Invalid choice\n";
+                continue;
+            }
+
+            playRound();
+
+            // cleanup before next game
+            reset();
+
+            char again;
+            cout << "Play again? (y/n): ";
+            cin >> again;
+            if (again != 'y' && again != 'Y')
+            {
+                cout << "Thanks for playing!\n";
+                break;
+            }
+        }
     }
 };
 
