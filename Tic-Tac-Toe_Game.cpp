@@ -1,6 +1,8 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <ctime>
+#include <limits>
 
 using namespace std;
 
@@ -274,7 +276,7 @@ public:
             getBestMove(board, row, col);
         }
 
-        cout << name << " chooses position (" << row << ", " << col << ")\n";
+        cout << name << " chooses position (" << row + 1 << ", " << col + 1 << ")\n";
     }
 
     void setDifficulty(Difficulty d) //--Mina--
@@ -558,7 +560,13 @@ public:
             showMenu(); // prints the menu only
 
             int choice;
-            cin >> choice;
+            if (!(cin >> choice))
+            {
+                cout << "Invalid input. Please enter a number.\n";
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                continue;
+            }
 
             switch (choice)
             {
