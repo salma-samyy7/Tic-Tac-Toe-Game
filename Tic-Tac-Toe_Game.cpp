@@ -262,7 +262,7 @@ public:
         cout << "Select difficulty: 1. Easy 2. Hard: ";
         cin >> diffChoice;
         Difficulty diff = (diffChoice == 1) ? Difficulty::Easy : Difficulty::Hard;
-        setupPvC(diff);
+        setupPVC(diff);
         break;
      }
        case 3:
@@ -302,21 +302,22 @@ public:
         // TODO: Get move from AI and apply to board
     }
 
-    bool checkGameEnd()    //--Abdelmasih--
-    {
-        // checks if the game has ended (win or draw)
-      if (board.checkWin(HumanPlayer->getSymbol()))
-     {
+    bool checkGameEnd(Board &board, Player *humanPlayer) {
+    // checks if the game has ended (win or draw)
+    if (board.checkWin(humanPlayer->getSymbol())) {
         cout << humanPlayer->getName() << " wins!\n";
         return true;
-     }
-      if (board.isFull())
-     {
+    }
+
+    if (board.isFull()) {
         cout << "It's a draw!\n";
         return true;
-     }
-     return false;   
     }
+
+    return false;
+    }
+
+    
 
     void displayResult() const     //--Mazen--
     {
