@@ -26,20 +26,27 @@ public:
     {
         // prints the current board to console
         // TODO: print board with row/col formatting
+        cout << "   ";
+        for (int j = 0; j < size; j++)
+            cout << j + 1 << "   ";
+        cout << "\n";
+
         for (int i = 0; i < size; i++)
         {
+            cout << i + 1 << "  ";
             for (int j = 0; j < size; j++)
             {
                 cout << grid[i][j];
                 if (j < size - 1)
-                    cout << "|";
+                    cout << " | ";
             }
             cout << "\n";
             if (i < size - 1)
             {
+                cout << "   ";
                 for (int j = 0; j < size; j++)
                 {
-                    cout << "-";
+                    cout << "--";
                     if (j < size - 1)
                         cout << "+";
                 }
@@ -236,10 +243,13 @@ public:
     void getMove(const Board &board, int &row, int &col) override //--Mazen--
     {
         // gets move from user
+         while (true) {
         cout << name << "'s turn (" << symbol << "). Enter your move (row col): ";
         cin >> row >> col;
-        row--;
-        col--;
+        row--; col--;
+        if (board.isValidMove(row, col)) break;
+        cout << "Invalid move. Try again.\n";
+    }
     }
 };
 
@@ -414,7 +424,6 @@ public:
         cout << "Select game mode: ";
     }
 
-
     void setupPvP() //--Salma--
     {
         // setup player vs player game
@@ -469,6 +478,7 @@ public:
 
             if (checkGameEnd())
             {
+                displayResult();
                 break;
             }
 
@@ -497,12 +507,10 @@ public:
         // checks if the game has ended (win or draw)
         if (board_.checkWin(current_->getSymbol()))
         {
-            cout << current_->getName() << " wins!\n";
             return true;
         }
         if (board_.isFull())
         {
-            cout << "It's a draw!\n";
             return true;
         }
         return false;
@@ -593,6 +601,7 @@ int main()
 {
     // TODO: create Game object and call start()
     Game game;
+    srand(time(0));
     game.start();
     return 0;
 }
